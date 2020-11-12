@@ -8,3 +8,4 @@ OAUTH_TOKEN_SECRET = "here"
 twitter = Twython(APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET)
 
 retrieved_user_tweets = twitter.get_user_timeline(user_id="kanyewest")
+print(retrieved_user_tweets)
