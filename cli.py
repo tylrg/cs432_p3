@@ -3,7 +3,6 @@ def main():
 
 main()
 
-
 # OPTIONS #
 # 1 sign in
 # 2 view user data (authenticated?)
