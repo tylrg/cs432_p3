@@ -86,11 +86,13 @@ lastUpdated = datetime.datetime.utcnow().isoformat()
 syntax_dict = count_by_word(compoundText)
 syntax_dict = list(filter(lambda x: x[1] != 1, syntax_dict))
 userStore = {
+   "_id": sn,
    "last_updated": lastUpdated,
    "avg_sentiment": averageSentiment,
    "syntax_dict": syntax_dict[:30],
-   "following": following,
-   "followers": followers,
+   "following": following['ids'],
+   "followers": followers['ids'],
+   "tweets": tweets
 }
 #print(userStore)
 
