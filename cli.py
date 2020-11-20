@@ -164,7 +164,7 @@ def compareUsers(sn,osn):
 def menu(user, collection):
     print(f"-------------\n*USER: @{user}*\n-------------\
           \n1: View This User's Data\n2: View This User's Tweets\n3: Compare Two Screen Names\n4: Find Similar Sentiment Scores To This User\n5: Delete This User\
-          \n6: Refresh Data For This User\n7: Sign Out\n0: Exit CLI")
+          \n6: Refresh Data For This User\n7: Sign Out\n8: Aggregate Database\n0: Exit CLI")
     choice = input('Choose an action: ')
     clear()
     if(choice == '1'):
@@ -175,10 +175,23 @@ def menu(user, collection):
         clear()
 
         if(choice == '1'):
+
+            pipeline = [
+                {"$match": {"_id": user}},
+                {"$group": {"_id": user, "totalFollowers": {"$sum": {"$size": "$followers"}}, "totalFollowing": {"$sum": {"$size": "$following"}}}},
+                {"$project": {"followerToFollowingRatio": {"$divide": ["$totalFollowers", "$totalFollowing"]}}}
+            ]
+            ratioCur = collection.aggregate(pipeline)
+            ratio = 0
+            for doc in ratioCur:
+                ratio = doc['followerToFollowingRatio']
+                break
+
             for doc in cur:
                 date = dateutil.parser.parse(doc['last_updated'])
                 print()
-                print(f'--------------------\nUSER: {user}\nSENTIMENT SCORE: {doc["avg_sentiment"]}\nLAST UPDATED: {date}\
+                print(f'--------------------\nUSER: @{user}\nSENTIMENT SCORE: {doc["avg_sentiment"]}\nLAST UPDATED: {date}\
+                      \nFOLLOWER-TO-FOLLOWING RATIO FOR @{user}: {ratio}\
                       \n--------------------\nMOST USED WORDS\n--------------------')
                 if(len(doc['syntax_dict']) == 0):
                     print('HAS NEVER TWEETED')
@@ -346,6 +359,49 @@ def menu(user, collection):
     elif(choice == '7'):
         print(f'SIGNED OUT {user}')
         main()
+    elif(choice == '8'):
+        print('--------------------\nDATABASE AGGREGATE TOTALS\n--------------------')
+        pipeline = [
+            {"$group": {"_id": "0", "total": {"$sum": "$avg_sentiment"}, "count": {"$sum": 1}}},
+            {"$project": {"totalAvgSent": {"$divide": ["$total", "$count"]}}}
+        ]
+        cur = collection.aggregate(pipeline)
+        for doc in cur:
+            print(f'AVERAGE SENTIMENT SCORE OF DATABASE: {doc["totalAvgSent"]}')
+            break
+
+        pipeline = [
+            {"$group": {"_id": "0", "totalFollowing": {"$sum": {"$size": "$following"}}, "countDocs": {"$sum": 1}}},
+            {"$project": {"totalAvgFollowing": {"$divide": ["$totalFollowing", "$countDocs"]}}}
+        ]
+        cur = collection.aggregate(pipeline)
+        for doc in cur:
+            print(f'AVERAGE FOLLOWING PER DATABASE USER: {doc["totalAvgFollowing"]}')
+            break
+
+        pipeline = [
+            {"$group": {"_id": "0", "totalFollowers": {"$sum": {"$size": "$followers"}}, "countDocs": {"$sum": 1}}},
+            {"$project": {"totalAvgFollowers": {"$divide": ["$totalFollowers", "$countDocs"]}}}
+        ]
+
+        cur = collection.aggregate(pipeline)
+        for doc in cur:
+            print(f'AVERAGE FOLLOWERS PER DATABASE USER: {doc["totalAvgFollowers"]}')
+            break
+
+        pipeline = [
+            {"$group": {"_id": "0", "totalFollowers": {"$sum": {"$size": "$followers"}}, "totalFollowing": {"$sum": {"$size": "$following"}}, "countDocs": {"$sum": 1}}},
+            {"$project": {"avgFollowerCount": {"$divide": ["$totalFollowers", "$countDocs"]}, "avgFollowingCount": {"$divide": ["$totalFollowing", "$countDocs"]}}},
+            {"$project": {"followerToFollowingRatio": {"$divide": ["$avgFollowerCount", "$avgFollowingCount"]}}}
+        ]
+
+        cur = collection.aggregate(pipeline)
+        for doc in cur:
+            print(f'AVERAGE FOLLOWER-TO-FOLLOWING RATIO PER DATABASE USER: {doc["followerToFollowingRatio"]}')
+            break
+
+        print('--------------------')
+        menu(user, collection)
     elif(choice == '0'):
         quit()
     else:
@@ -356,7 +412,7 @@ def clear():
     print('\033c', end='')
 
 def main():
-  print('-------------\n*TS^3 (Twitter Sentiment/Similarity Search)*\n-------------\
+  print('---------------------------------------\n*TS^3 (Twitter Sentiment/Similarity Search)*\n---------------------------------------\
         \n1: Grab a Twitter User\n0: Exit\n')
   choice = input('Choose an action: ')
   clear()
