@@ -192,7 +192,7 @@ def menu(user, collection):
                 print()
                 print(f'--------------------\nUSER: @{user}\nSENTIMENT SCORE: {doc["avg_sentiment"]}\nLAST UPDATED: {date}\
                       \nFOLLOWER-TO-FOLLOWING RATIO FOR @{user}: {ratio}\
-                      --------------------\nMOST USED WORDS\n--------------------')
+                      \n--------------------\nMOST USED WORDS\n--------------------')
                 if(len(doc['syntax_dict']) == 0):
                     print('HAS NEVER TWEETED')
                 else:
