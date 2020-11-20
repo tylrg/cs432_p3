@@ -356,7 +356,7 @@ def clear():
     print('\033c', end='')
 
 def main():
-  print('-------------\n*TITLE HERE*\n-------------\
+  print('-------------\n*TS^3 (Twitter Sentiment/Similarity Search)*\n-------------\
         \n1: Grab a Twitter User\n0: Exit\n')
   choice = input('Choose an action: ')
   clear()
