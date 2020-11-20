@@ -100,25 +100,6 @@ def compareUsers(sn,osn):
 
   ## get list of users in db
   cur = collection.find()
-  #for doc in cur:
-  #print(doc)
-  #print(doc['_id'])
-
-  # sn = "jaden"
-  # ##compare with another user##
-  # osn = "jaden"
-
-  ##get all tweets for a given user
-  #tweets = []
-  # cur = collection.find({"_id": sn})
-  # for doc in cur:
-  #   #print(doc)
-  #   print(doc['tweets'])
-
-
-  ## delete a given user from the database
-  # cur = collection.delete_one({"_id": sn})
-  # print(cur)
 
   ### stats for similarity score ###
   snFollowing = []
@@ -175,12 +156,6 @@ def compareUsers(sn,osn):
   if inSN > -1 and inOSN > -1:
     mutual = 1
 
-
-
-  # print(sharedSyntax/30)
-  # print(sharedFollowing)
-  # print(aSDiff)
-  # print(mutual)
 
   sScore = (sharedFollowing * 100)*(mutual+1)+(sharedSyntax/30)-aSDiff
   return sScore
