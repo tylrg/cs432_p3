@@ -1,9 +1,10 @@
 SIMILIARITY SCORE (SS) IS CALCULATED AS FOLLOWS
 
-Let AS = average sentiment score difference (average of the sentiment score for all tweets in a user document)
+Let ASD = average sentiment score difference (average of the sentiment score for all tweets in a user document)
 Let SF = shared following (average of the (intersect of following/tota following) for each user)
-Let TW = top words (number of top 10 words in common (excluding articles))
-Let SR = shared retweets (number of top 10 retweeted accounts in common)
+Let STW = shared top words (number of top 30 words in common)
 Let M = mutual (are the user's following each other? 0 if no, 1 if yes)
 
-SS = (SF*100)(M + 1)((TW + SR) - |AS|) 
+SS = (SF*100)(M + 1)((STW/30)) - |ASD|
+
+Where SS = similarity score
